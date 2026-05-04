@@ -1,6 +1,6 @@
 import { BurnupChart } from './BurnupChart';
 import { AccuracyTrend } from './AccuracyTrend';
-import { MockCard } from './MockCard';
+import { MockSummary } from './MockSummary';
 import { PaceCard } from './PaceCard';
 import { Heatmap } from './Heatmap';
 import { useAppState } from '../../state/StateContext';
@@ -23,7 +23,7 @@ export const Dashboard = () => {
       </div>
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>模試 (CPA 3回)</h2>
-        <MockCard />
+        <MockSummary />
       </div>
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>セクション別 習熟度ヒートマップ</h2>

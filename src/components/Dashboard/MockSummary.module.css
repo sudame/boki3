@@ -1,0 +1,19 @@
+.list { display: flex; gap: 12px; }
+.slot {
+  flex: 1;
+  border: 1px solid #e5e5ea;
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.slotTitle { font-size: 12px; color: #666; }
+.score { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.scorePass { color: #1c8c1c; }
+.scoreFail { color: #c0392b; }
+.scoreNone { color: #ccc; font-size: 14px; font-weight: 400; }
+.breakdown { font-size: 11px; color: #888; font-variant-numeric: tabular-nums; }
+.date { font-size: 11px; color: #999; }
+.summary { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed #e5e5ea; font-size: 13px; color: #555; }
+.summary strong { color: #1d1d1f; }
