@@ -20,15 +20,13 @@ export const Dashboard = () => {
     <div className={styles.grid}>
       {/* Tier 1: 結論 */}
       <StatusBanner />
-      <div className={styles.row2}>
-        <div className={styles.card}>
-          <h2 className={styles.cardTitle}>総合バーンアップ ({mp.total})</h2>
-          <BurnupChart series={masteryData} />
-        </div>
-        <div className={styles.card}>
-          <h2 className={styles.cardTitle}>インプット バーンアップ ({ip.total})</h2>
-          <BurnupChart series={inputData} />
-        </div>
+      <div className={styles.card}>
+        <h2 className={styles.cardTitle}>総合バーンアップ ({mp.total})</h2>
+        <BurnupChart series={masteryData} height={140} />
+      </div>
+      <div className={styles.card}>
+        <h2 className={styles.cardTitle}>インプット バーンアップ ({ip.total})</h2>
+        <BurnupChart series={inputData} height={140} />
       </div>
 
       {/* Tier 2: トレンドと運用 */}
