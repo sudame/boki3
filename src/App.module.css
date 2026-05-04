@@ -1,0 +1,17 @@
+.shell { min-height: 100vh; display: flex; flex-direction: column; }
+.tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5e5ea;
+}
+.tab {
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+}
+.tabActive { border-bottom-color: #0066cc; color: #0066cc; }
+.main { padding: 24px; max-width: 1100px; margin: 0 auto; width: 100%; }

@@ -1,0 +1,22 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #fff;
+  border-bottom: 1px solid #e5e5ea;
+}
+.title { font-size: 18px; font-weight: 600; margin: 0; }
+.chips { display: flex; gap: 12px; }
+.chip {
+  padding: 6px 12px;
+  background: #f0f0f3;
+  border-radius: 999px;
+  font-size: 13px;
+}
+.settingsBtn {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  padding: 6px 10px;
+}

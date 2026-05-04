@@ -1,0 +1,9 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+  background: #f5f5f7;
+  color: #1d1d1f;
+}
+a { color: #0066cc; }
+button { font: inherit; cursor: pointer; }
