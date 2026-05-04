@@ -15,9 +15,9 @@ export const BurnupChart = ({ data, goal, height = 280 }: Props) => (
       <YAxis domain={[0, goal]} />
       <Tooltip />
       <Legend />
-      <Line type="monotone" dataKey="ideal" name="理想" stroke="#bbb" strokeDasharray="4 4" dot={false} />
-      <Line type="monotone" dataKey="actual" name="実績" stroke="#0066cc" strokeWidth={2} connectNulls={false} />
-      <Line type="monotone" dataKey="forecast" name="予測" stroke="#e67e22" strokeDasharray="6 4" strokeWidth={2} dot={false} connectNulls={false} />
+      <Line type="linear" dataKey="ideal" name="理想" stroke="#bbb" strokeDasharray="4 4" dot={false} />
+      <Line type="linear" dataKey="actual" name="実績" stroke="#0066cc" strokeWidth={2} connectNulls={false} />
+      <Line type="linear" dataKey="forecast" name="予測" stroke="#e67e22" strokeDasharray="6 4" strokeWidth={2} dot={false} connectNulls={false} />
     </LineChart>
   </ResponsiveContainer>
 );
