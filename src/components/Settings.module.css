@@ -1,0 +1,10 @@
+.backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 10; }
+.dialog { background: #fff; border-radius: 8px; padding: 24px; min-width: 320px; }
+.title { margin: 0 0 16px; font-size: 16px; }
+.row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.label { font-size: 13px; color: #555; }
+.input { padding: 8px; border: 1px solid #d0d0d5; border-radius: 6px; font-size: 14px; }
+.error { color: #c0392b; font-size: 12px; }
+.actions { display: flex; justify-content: flex-end; gap: 8px; }
+.btn { padding: 8px 16px; border-radius: 6px; border: 1px solid #d0d0d5; background: #fff; }
+.primary { background: #0066cc; color: #fff; border-color: #0066cc; }

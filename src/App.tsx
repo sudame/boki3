@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Header } from './components/Header';
 import { LessonList } from './components/Input/LessonList';
 import { ProblemList } from './components/Output/ProblemList';
+import { Dashboard } from './components/Dashboard/Dashboard';
+import { Settings } from './components/Settings';
 import styles from './App.module.css';
 
 type Tab = 'dashboard' | 'input' | 'output';
@@ -25,11 +27,11 @@ export const App = () => {
         ))}
       </nav>
       <main className={styles.main}>
-        {tab === 'dashboard' && <div>Dashboard placeholder</div>}
+        {tab === 'dashboard' && <Dashboard />}
         {tab === 'input' && <LessonList />}
         {tab === 'output' && <ProblemList />}
       </main>
-      {showSettings && <div onClick={() => setShowSettings(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>(settings placeholder — click to close)</div>}
+      {showSettings && <Settings onClose={() => setShowSettings(false)} />}
     </div>
   );
 };
