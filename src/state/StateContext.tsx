@@ -6,7 +6,8 @@ type Action =
   | { type: 'toggleLesson'; lessonId: string }
   | { type: 'recordAttempt'; problemId: string; correct: boolean }
   | { type: 'setTargetDate'; date: string }
-  | { type: 'setStartDate'; date: string };
+  | { type: 'setStartDate'; date: string }
+  | { type: 'setLessonCompletedAt'; lessonId: string; date: string };
 
 const reducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
@@ -32,6 +33,16 @@ const reducer = (state: AppState, action: Action): AppState => {
       return { ...state, targetDate: action.date };
     case 'setStartDate':
       return { ...state, startDate: action.date };
+    case 'setLessonCompletedAt': {
+      if (!state.lessonProgress[action.lessonId]) return state;
+      return {
+        ...state,
+        lessonProgress: {
+          ...state.lessonProgress,
+          [action.lessonId]: { completedAt: new Date(action.date + 'T12:00:00').toISOString() },
+        },
+      };
+    }
   }
 };
 
