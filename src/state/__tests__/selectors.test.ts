@@ -3,6 +3,8 @@ import {
   inputProgress,
   outputAccuracy,
   burnupSeries,
+  masteryBurnupSeries,
+  masteryProgress,
   daysRemaining,
   latestAttemptByProblem,
 } from '../selectors';
@@ -136,6 +138,63 @@ describe('burnupSeries', () => {
     const s = baseState({ startDate: '2026-05-04', targetDate: '2026-05-10' });
     const series = burnupSeries(s, '2026-05-05');
     expect(series.every(p => p.forecast === null)).toBe(true);
+  });
+});
+
+describe('masteryProgress', () => {
+  it('counts completed lessons + problems whose latest attempt is correct', () => {
+    const s = baseState({
+      lessonProgress: {
+        'lesson-01': { completedAt: '2026-05-04T10:00:00Z' },
+        'lesson-02': { completedAt: '2026-05-04T11:00:00Z' },
+      },
+      problemAttempts: [
+        { id: 'a', problemId: 'p1-01', correct: true, attemptedAt: '2026-05-04T10:00:00Z' },
+        { id: 'b', problemId: 'p1-02', correct: false, attemptedAt: '2026-05-04T10:00:00Z' },
+        { id: 'c', problemId: 'p1-03', correct: true, attemptedAt: '2026-05-04T10:00:00Z' },
+        { id: 'd', problemId: 'p1-03', correct: false, attemptedAt: '2026-05-04T11:00:00Z' },
+      ],
+    });
+    const m = masteryProgress(s);
+    // lessons=2, problems-correct (latest)=1 (p1-01); p1-02 wrong; p1-03 latest=wrong
+    expect(m.done).toBe(3);
+    expect(m.total).toBe(70);
+  });
+});
+
+describe('masteryBurnupSeries', () => {
+  it('actual reflects historically accurate latest-correct status per day', () => {
+    const s = baseState({
+      startDate: '2026-05-01',
+      targetDate: '2026-05-05',
+      lessonProgress: {
+        'lesson-01': { completedAt: '2026-05-01T10:00:00Z' },
+      },
+      problemAttempts: [
+        // p1-01 correct on 5-02 (still latest)
+        { id: 'a', problemId: 'p1-01', correct: true, attemptedAt: '2026-05-02T10:00:00Z' },
+        // p1-02 correct on 5-02, then wrong on 5-04 → on 5-02/5-03 it counted, on 5-04 it does not
+        { id: 'b', problemId: 'p1-02', correct: true, attemptedAt: '2026-05-02T10:00:00Z' },
+        { id: 'c', problemId: 'p1-02', correct: false, attemptedAt: '2026-05-04T10:00:00Z' },
+      ],
+    });
+    const series = masteryBurnupSeries(s, '2026-05-04');
+    // 5-01: lesson1 done, no problem attempts yet → 1
+    expect(series[0].actual).toBe(1);
+    // 5-02: lesson1 + p1-01 correct + p1-02 correct → 3
+    expect(series[1].actual).toBe(3);
+    // 5-03: same → 3
+    expect(series[2].actual).toBe(3);
+    // 5-04: lesson1 + p1-01 correct + p1-02 latest wrong → 2
+    expect(series[3].actual).toBe(2);
+    // 5-05: future from today=5-04 → null
+    expect(series[4].actual).toBeNull();
+  });
+  it('ideal interpolates from 0 to 70 (lessons + problems)', () => {
+    const s = baseState({ startDate: '2026-05-04', targetDate: '2026-05-06' });
+    const series = masteryBurnupSeries(s, '2026-05-06');
+    expect(series[0].ideal).toBe(0);
+    expect(series[2].ideal).toBe(70);
   });
 });
 
