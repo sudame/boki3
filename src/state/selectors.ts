@@ -258,8 +258,9 @@ export const recentWrongs = (s: AppState, todayISO: string, days: number = 7): P
     .sort((a, b) => (a.attemptedAt < b.attemptedAt ? 1 : -1));
 };
 
+// 今日を含めた残り日数 (PaceCard と一致)
 export const daysRemaining = (s: AppState, todayISO: string): number => {
   const t = new Date(s.targetDate + 'T00:00:00Z').getTime();
   const today = new Date(todayISO + 'T00:00:00Z').getTime();
-  return Math.round((t - today) / (24 * 60 * 60 * 1000));
+  return Math.round((t - today) / 86_400_000) + 1;
 };
