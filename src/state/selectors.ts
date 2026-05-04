@@ -35,19 +35,38 @@ const eachDay = (startISO: string, endISO: string): string[] => {
   return out;
 };
 
-export type BurnupPoint = { date: string; actual: number; ideal: number };
+export type BurnupPoint = {
+  date: string;
+  actual: number | null;
+  ideal: number;
+  forecast: number | null;
+};
 
-export const burnupSeries = (s: AppState): BurnupPoint[] => {
+export const burnupSeries = (s: AppState, todayISO: string): BurnupPoint[] => {
   const days = eachDay(s.startDate, s.targetDate);
   const completedDates = Object.values(s.lessonProgress)
     .map(p => p.completedAt.slice(0, 10))
     .sort();
   const goal = TOTAL_LESSONS_GOAL;
   const span = days.length - 1;
+  const todayActual = completedDates.filter(d => d <= todayISO).length;
+  const startMs = new Date(s.startDate + 'T00:00:00Z').getTime();
+  const todayMs = new Date(todayISO + 'T00:00:00Z').getTime();
+  const elapsedDays = Math.max(0, Math.round((todayMs - startMs) / 86_400_000));
+  const pacePerDay = elapsedDays > 0 ? todayActual / elapsedDays : 0;
+
   return days.map((date, i) => {
-    const actual = completedDates.filter(d => d <= date).length;
     const ideal = span === 0 ? goal : Math.round((goal * i) / span);
-    return { date, actual, ideal };
+    const isPastOrToday = date <= todayISO;
+    const isFutureOrToday = date >= todayISO;
+    const actual = isPastOrToday ? completedDates.filter(d => d <= date).length : null;
+    let forecast: number | null = null;
+    if (isFutureOrToday && elapsedDays > 0 && todayActual > 0) {
+      const dayMs = new Date(date + 'T00:00:00Z').getTime();
+      const daysFromToday = Math.round((dayMs - todayMs) / 86_400_000);
+      forecast = Math.min(goal, Math.round(todayActual + pacePerDay * daysFromToday));
+    }
+    return { date, actual, ideal, forecast };
   });
 };
 

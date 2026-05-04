@@ -67,12 +67,12 @@ describe('outputAccuracy', () => {
 describe('burnupSeries', () => {
   it('produces one point per day from start to target', () => {
     const s = baseState({ startDate: '2026-05-04', targetDate: '2026-05-06' });
-    const series = burnupSeries(s);
+    const series = burnupSeries(s, '2026-05-06');
     expect(series).toHaveLength(3);
     expect(series[0].date).toBe('2026-05-04');
     expect(series[2].date).toBe('2026-05-06');
   });
-  it('cumulative actual increments on completion days', () => {
+  it('cumulative actual increments on completion days, up to today', () => {
     const s = baseState({
       startDate: '2026-05-04',
       targetDate: '2026-05-06',
@@ -82,17 +82,60 @@ describe('burnupSeries', () => {
         'lesson-03': { completedAt: '2026-05-05T11:00:00Z' },
       },
     });
-    const series = burnupSeries(s);
+    const series = burnupSeries(s, '2026-05-06');
     expect(series[0].actual).toBe(1);
     expect(series[1].actual).toBe(3);
     expect(series[2].actual).toBe(3);
   });
+  it('actual is null after today', () => {
+    const s = baseState({
+      startDate: '2026-05-04',
+      targetDate: '2026-05-10',
+      lessonProgress: { 'lesson-01': { completedAt: '2026-05-04T10:00:00Z' } },
+    });
+    const series = burnupSeries(s, '2026-05-05');
+    expect(series[0].actual).toBe(1);
+    expect(series[1].actual).toBe(1);
+    expect(series[2].actual).toBeNull();
+    expect(series[6].actual).toBeNull();
+  });
   it('ideal interpolates linearly from 0 to 46', () => {
     const s = baseState({ startDate: '2026-05-04', targetDate: '2026-05-06' });
-    const series = burnupSeries(s);
+    const series = burnupSeries(s, '2026-05-06');
     expect(series[0].ideal).toBe(0);
     expect(series[2].ideal).toBe(46);
     expect(series[1].ideal).toBe(23);
+  });
+  it('forecast projects from today using current pace', () => {
+    const s = baseState({
+      startDate: '2026-05-01',
+      targetDate: '2026-05-08',
+      lessonProgress: {
+        'lesson-01': { completedAt: '2026-05-01T10:00:00Z' },
+        'lesson-02': { completedAt: '2026-05-02T10:00:00Z' },
+        'lesson-03': { completedAt: '2026-05-03T10:00:00Z' },
+        'lesson-04': { completedAt: '2026-05-04T10:00:00Z' },
+      },
+    });
+    // today=2026-05-04, elapsed=3 days, done=4 → pace=4/3 per day
+    const series = burnupSeries(s, '2026-05-04');
+    // past dates have no forecast
+    expect(series[0].forecast).toBeNull();
+    expect(series[2].forecast).toBeNull();
+    // today is anchor
+    const today = series.find(p => p.date === '2026-05-04')!;
+    expect(today.forecast).toBe(4);
+    // +1 day → 4 + 4/3 ≈ 5.33 → 5
+    const tomorrow = series.find(p => p.date === '2026-05-05')!;
+    expect(tomorrow.forecast).toBe(5);
+    // +4 days → 4 + 16/3 ≈ 9.33 → 9
+    const target = series.find(p => p.date === '2026-05-08')!;
+    expect(target.forecast).toBe(9);
+  });
+  it('forecast is null when nothing done yet (no pace)', () => {
+    const s = baseState({ startDate: '2026-05-04', targetDate: '2026-05-10' });
+    const series = burnupSeries(s, '2026-05-05');
+    expect(series.every(p => p.forecast === null)).toBe(true);
   });
 });
 
