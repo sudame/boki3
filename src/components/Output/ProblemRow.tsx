@@ -25,7 +25,9 @@ export const ProblemRow = ({ problem, showNumber = false, hideLink = false }: Pr
   return (
     <div className={styles.row}>
       <div className={styles.main}>
-        {showNumber && <span className={styles.no}>問{problem.no}</span>}
+        {showNumber
+          ? <span className={styles.no}>問{problem.no}</span>
+          : <span className={styles.noPlaceholder} aria-hidden="true" />}
         <span className={styles.badgeSlot}>{badgeNode}</span>
         <span className={styles.title} onClick={() => setExpanded(e => !e)}>{problem.title}</span>
         <div className={styles.actions}>

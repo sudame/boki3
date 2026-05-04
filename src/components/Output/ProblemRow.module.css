@@ -6,13 +6,16 @@
   color: #1d1d1f;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  min-width: 48px;
+  width: 48px;
   font-size: 13px;
   background: #eef2f7;
   padding: 2px 6px;
   border-radius: 4px;
   text-align: center;
+  box-sizing: border-box;
+  margin-right: -6px;
 }
+.noPlaceholder { width: 48px; flex-shrink: 0; margin-right: -6px; }
 .badgeSlot { width: 22px; display: inline-flex; justify-content: center; }
 .badge { font-weight: 700; font-size: 14px; }
 .badgeOk { color: #1c8c1c; }
