@@ -1,7 +1,17 @@
 .row { padding: 8px 12px; border-bottom: 1px solid #f0f0f3; }
 .row:hover { background: #fafafc; }
 .main { display: flex; align-items: center; gap: 12px; }
-.no { color: #888; font-variant-numeric: tabular-nums; min-width: 36px; }
+.no {
+  color: #1d1d1f;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  min-width: 48px;
+  font-size: 13px;
+  background: #eef2f7;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-align: center;
+}
 .title { flex: 1; cursor: pointer; }
 .badge { width: 22px; text-align: center; font-weight: 600; }
 .badgeOk { color: #1c8c1c; }

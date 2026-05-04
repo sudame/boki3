@@ -18,7 +18,7 @@ export const ProblemRow = ({ problem }: Props) => {
   return (
     <div className={styles.row}>
       <div className={styles.main}>
-        <span className={styles.no}>{problem.no}.</span>
+        <span className={styles.no}>問{problem.no}</span>
         <span className={`${styles.badge} ${badgeClass}`}>{badgeText}</span>
         <span className={styles.title} onClick={() => setExpanded(e => !e)}>{problem.title}</span>
         <div className={styles.actions}>
