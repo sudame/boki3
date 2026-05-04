@@ -1,0 +1,16 @@
+.row { padding: 8px 12px; border-bottom: 1px solid #f0f0f3; }
+.row:hover { background: #fafafc; }
+.main { display: flex; align-items: center; gap: 12px; }
+.no { color: #888; font-variant-numeric: tabular-nums; min-width: 36px; }
+.title { flex: 1; cursor: pointer; }
+.badge { width: 22px; text-align: center; font-weight: 600; }
+.badgeOk { color: #1c8c1c; }
+.badgeNg { color: #c0392b; }
+.badgeNone { color: #ccc; }
+.actions { display: flex; gap: 6px; }
+.btn { padding: 4px 10px; border-radius: 6px; border: 1px solid #d0d0d5; background: #fff; }
+.btnOk { color: #1c8c1c; border-color: #1c8c1c; }
+.btnNg { color: #c0392b; border-color: #c0392b; }
+.link { text-decoration: none; padding: 0 6px; }
+.history { padding: 6px 12px 6px 60px; font-size: 12px; color: #666; }
+.histItem { padding: 2px 0; }

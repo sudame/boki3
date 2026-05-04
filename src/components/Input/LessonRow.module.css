@@ -1,0 +1,12 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f3;
+}
+.row:hover { background: #fafafc; }
+.no { color: #888; font-variant-numeric: tabular-nums; min-width: 48px; }
+.title { flex: 1; }
+.titleDone { text-decoration: line-through; color: #888; }
+.link { text-decoration: none; padding: 0 8px; }

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Header } from './components/Header';
+import { LessonList } from './components/Input/LessonList';
+import { ProblemList } from './components/Output/ProblemList';
 import styles from './App.module.css';
 
 type Tab = 'dashboard' | 'input' | 'output';
@@ -24,8 +26,8 @@ export const App = () => {
       </nav>
       <main className={styles.main}>
         {tab === 'dashboard' && <div>Dashboard placeholder</div>}
-        {tab === 'input' && <div>Input placeholder</div>}
-        {tab === 'output' && <div>Output placeholder</div>}
+        {tab === 'input' && <LessonList />}
+        {tab === 'output' && <ProblemList />}
       </main>
       {showSettings && <div onClick={() => setShowSettings(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>(settings placeholder — click to close)</div>}
     </div>
