@@ -5,7 +5,8 @@ import { loadState, saveState } from './storage';
 type Action =
   | { type: 'toggleLesson'; lessonId: string }
   | { type: 'recordAttempt'; problemId: string; correct: boolean }
-  | { type: 'setTargetDate'; date: string };
+  | { type: 'setTargetDate'; date: string }
+  | { type: 'setStartDate'; date: string };
 
 const reducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
@@ -29,6 +30,8 @@ const reducer = (state: AppState, action: Action): AppState => {
     }
     case 'setTargetDate':
       return { ...state, targetDate: action.date };
+    case 'setStartDate':
+      return { ...state, startDate: action.date };
   }
 };
 

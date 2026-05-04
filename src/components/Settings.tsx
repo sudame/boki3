@@ -6,12 +6,14 @@ type Props = { onClose: () => void };
 
 export const Settings = ({ onClose }: Props) => {
   const { state, dispatch } = useAppState();
-  const [date, setDate] = useState(state.targetDate);
-  const error = date < state.startDate ? '目標日は開始日以降にしてください' : '';
+  const [startDate, setStartDate] = useState(state.startDate);
+  const [targetDate, setTargetDate] = useState(state.targetDate);
+  const error = targetDate < startDate ? '目標日は開始日以降にしてください' : '';
 
   const save = () => {
     if (error) return;
-    dispatch({ type: 'setTargetDate', date });
+    if (startDate !== state.startDate) dispatch({ type: 'setStartDate', date: startDate });
+    if (targetDate !== state.targetDate) dispatch({ type: 'setTargetDate', date: targetDate });
     onClose();
   };
 
@@ -20,12 +22,12 @@ export const Settings = ({ onClose }: Props) => {
       <div className={styles.dialog} onClick={e => e.stopPropagation()}>
         <h2 className={styles.title}>設定</h2>
         <div className={styles.row}>
-          <label className={styles.label}>開始日 (自動)</label>
-          <input className={styles.input} type="date" value={state.startDate} disabled />
+          <label className={styles.label}>開始日</label>
+          <input className={styles.input} type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
         </div>
         <div className={styles.row}>
           <label className={styles.label}>目標日</label>
-          <input className={styles.input} type="date" value={date} min={state.startDate} onChange={e => setDate(e.target.value)} />
+          <input className={styles.input} type="date" value={targetDate} min={startDate} onChange={e => setTargetDate(e.target.value)} />
           {error && <span className={styles.error}>{error}</span>}
         </div>
         <div className={styles.actions}>
