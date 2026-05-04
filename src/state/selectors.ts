@@ -102,9 +102,6 @@ const buildEventSeries = (
 
   const elapsedMs = Math.max(0, nowMs - startMs);
   const pacePerMs = elapsedMs > 0 && currentActual > 0 ? currentActual / elapsedMs : 0;
-  const projectedAtTarget = pacePerMs > 0
-    ? Math.min(goal, currentActual + pacePerMs * Math.max(0, targetMs - nowMs))
-    : null;
 
   // 行を ts でマージ
   const rows = new Map<number, BurnupPoint>();
@@ -128,10 +125,26 @@ const buildEventSeries = (
   get(startMs).ideal = 0;
   get(targetMs).ideal = goal;
 
-  // 予測線 (今〜目標日)
-  if (projectedAtTarget !== null) {
+  // 予測線: 現在ペースで線形外挿し、ゴールに到達したら平坦に折れ曲がる
+  let projectedAtTarget: number | null = null;
+  if (pacePerMs > 0 && currentActual < goal) {
+    const remainingToGoal = goal - currentActual;
+    const msToGoal = remainingToGoal / pacePerMs;
+    const tHitGoal = nowMs + msToGoal;
     get(nowMs).forecast = currentActual;
-    get(targetMs).forecast = projectedAtTarget;
+    if (tHitGoal <= targetMs) {
+      // ペースが間に合っている: ゴール到達時刻で折れ曲がり、その後平坦
+      get(tHitGoal).forecast = goal;
+      get(targetMs).forecast = goal;
+      projectedAtTarget = goal;
+    } else {
+      // ペース不足: 目標日に届かない値で終わる
+      const v = currentActual + pacePerMs * (targetMs - nowMs);
+      get(targetMs).forecast = v;
+      projectedAtTarget = v;
+    }
+  } else if (currentActual >= goal) {
+    projectedAtTarget = goal;
   }
 
   const points = [...rows.values()].sort((a, b) => a.ts - b.ts);

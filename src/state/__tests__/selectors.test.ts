@@ -145,6 +145,27 @@ describe('burnupSeries (event-based)', () => {
     expect(series.projectedAtTarget!).toBeLessThan(11);
   });
 
+  it('forecast plateaus at goal once pace reaches it before target', () => {
+    // 短い目標期間に大量に完了 → ペースが目標を超過するケース
+    const lessonProgress: Record<string, { completedAt: string }> = {};
+    for (let i = 1; i <= 40; i++) {
+      lessonProgress[`lesson-${String(i).padStart(2, '0')}`] = { completedAt: '2026-05-01T12:00:00Z' };
+    }
+    const s = baseState({
+      startDate: '2026-05-01',
+      targetDate: '2026-05-10',
+      lessonProgress,
+    });
+    // now=5/2 → 1日で40本完了 → ペース 40/日 → ゴール46には残6本=0.15日でぶつかる
+    const series = burnupSeries(s, '2026-05-02T00:00:00Z');
+    expect(series.projectedAtTarget).toBe(46);
+    // ゴール到達点 (forecast=46) が目標日より前に存在する
+    const hitPoint = series.points.find(
+      p => p.forecast === 46 && p.ts < series.domain[1],
+    );
+    expect(hitPoint).toBeDefined();
+  });
+
   it('forecast is null when no events have happened', () => {
     const s = baseState({ startDate: '2026-05-04', targetDate: '2026-05-10' });
     const series = burnupSeries(s, '2026-05-05');
