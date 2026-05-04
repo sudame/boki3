@@ -22,11 +22,11 @@ export const Dashboard = () => {
       <StatusBanner />
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>総合バーンアップ ({mp.total})</h2>
-        <BurnupChart series={masteryData} height={140} />
+        <BurnupChart series={masteryData} />
       </div>
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>インプット バーンアップ ({ip.total})</h2>
-        <BurnupChart series={inputData} height={140} />
+        <BurnupChart series={inputData} />
       </div>
 
       {/* Tier 2: トレンドと運用 */}
