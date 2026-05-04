@@ -34,26 +34,21 @@ const computeVerdict = (
 export const StatusBanner = () => {
   const { state } = useAppState();
   const today = new Date().toISOString().slice(0, 10);
+  const nowISO = new Date().toISOString();
   const readiness = readinessScore(state);
   const daysLeft = daysRemaining(state, today);
 
-  // ペースギャップ: 総合バーンアップで「目標日の forecast - ideal」 = どれだけ早く/遅く到達しそうか
-  const mastery = masteryBurnupSeries(state, today);
-  const inputs = burnupSeries(state, today);
-  const lastMastery = mastery[mastery.length - 1];
-  const lastInput = inputs[inputs.length - 1];
-  const paceGap = lastMastery?.forecast === null || lastMastery?.forecast === undefined
+  const mastery = masteryBurnupSeries(state, nowISO);
+  const inputs = burnupSeries(state, nowISO);
+
+  const paceGap = mastery.projectedAtTarget === null
     ? null
-    : lastMastery.forecast - lastMastery.ideal;
+    : mastery.projectedAtTarget - mastery.goal;
 
   const verdict = computeVerdict(readiness, paceGap, daysLeft);
 
-  const projForecast = lastMastery?.forecast === null || lastMastery?.forecast === undefined
-    ? null
-    : Math.round(lastMastery.forecast);
-  const inputForecast = lastInput?.forecast === null || lastInput?.forecast === undefined
-    ? null
-    : Math.round(lastInput.forecast);
+  const projForecast = mastery.projectedAtTarget === null ? null : Math.round(mastery.projectedAtTarget);
+  const inputForecast = inputs.projectedAtTarget === null ? null : Math.round(inputs.projectedAtTarget);
 
   return (
     <div className={`${styles.banner} ${styles[verdict.tone]}`}>

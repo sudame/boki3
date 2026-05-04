@@ -10,9 +10,9 @@ import styles from './Dashboard.module.css';
 
 export const Dashboard = () => {
   const { state } = useAppState();
-  const today = new Date().toISOString().slice(0, 10);
-  const inputData = burnupSeries(state, today);
-  const masteryData = masteryBurnupSeries(state, today);
+  const nowISO = new Date().toISOString();
+  const inputData = burnupSeries(state, nowISO);
+  const masteryData = masteryBurnupSeries(state, nowISO);
   const ip = inputProgress(state);
   const mp = masteryProgress(state);
 
@@ -23,11 +23,11 @@ export const Dashboard = () => {
       <div className={styles.row2}>
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>総合バーンアップ ({mp.total})</h2>
-          <BurnupChart data={masteryData} goal={mp.total} />
+          <BurnupChart series={masteryData} />
         </div>
         <div className={styles.card}>
           <h2 className={styles.cardTitle}>インプット バーンアップ ({ip.total})</h2>
-          <BurnupChart data={inputData} goal={ip.total} />
+          <BurnupChart series={inputData} />
         </div>
       </div>
 

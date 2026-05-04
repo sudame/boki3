@@ -27,88 +27,128 @@ export const outputAccuracy = (s: AppState) => {
   return { attempted, correct, rate: attempted === 0 ? 0 : correct / attempted };
 };
 
-const eachDay = (startISO: string, endISO: string): string[] => {
-  const out: string[] = [];
-  const d = new Date(startISO + 'T00:00:00Z');
-  const end = new Date(endISO + 'T00:00:00Z');
-  while (d <= end) {
-    out.push(d.toISOString().slice(0, 10));
-    d.setUTCDate(d.getUTCDate() + 1);
+// --- Burnup (event-based) ---
+
+export type BurnupPoint = {
+  ts: number;                 // ms since epoch
+  actual: number | null;
+  ideal: number | null;
+  forecast: number | null;
+};
+
+export type BurnupSeries = {
+  points: BurnupPoint[];      // sorted by ts
+  domain: [number, number];   // [startMs, targetMs]
+  goal: number;
+  projectedAtTarget: number | null;
+};
+
+type ValueEvent = { ts: number; value: number };
+
+const lessonValueEvents = (s: AppState): ValueEvent[] => {
+  const sorted = Object.values(s.lessonProgress)
+    .map(p => new Date(p.completedAt).getTime())
+    .sort((a, b) => a - b);
+  return sorted.map((ts, i) => ({ ts, value: i + 1 }));
+};
+
+// 各イベント時点での「累積マスタリ数 (完了レッスン + 最新試行が正解の問題数)」
+const masteryValueEvents = (s: AppState): ValueEvent[] => {
+  type Ev =
+    | { ts: number; kind: 'lesson'; lessonId: string }
+    | { ts: number; kind: 'attempt'; attempt: ProblemAttempt };
+  const all: Ev[] = [];
+  for (const [lessonId, p] of Object.entries(s.lessonProgress)) {
+    all.push({ ts: new Date(p.completedAt).getTime(), kind: 'lesson', lessonId });
+  }
+  for (const a of s.problemAttempts) {
+    all.push({ ts: new Date(a.attemptedAt).getTime(), kind: 'attempt', attempt: a });
+  }
+  all.sort((x, y) => x.ts - y.ts);
+
+  const completedLessons = new Set<string>();
+  const latestPerProblem: Record<string, ProblemAttempt> = {};
+  let correctCount = 0;
+  const out: ValueEvent[] = [];
+
+  for (const ev of all) {
+    if (ev.kind === 'lesson') {
+      completedLessons.add(ev.lessonId);
+    } else {
+      const prev = latestPerProblem[ev.attempt.problemId];
+      if (prev?.correct) correctCount -= 1;
+      latestPerProblem[ev.attempt.problemId] = ev.attempt;
+      if (ev.attempt.correct) correctCount += 1;
+    }
+    out.push({ ts: ev.ts, value: completedLessons.size + correctCount });
   }
   return out;
 };
 
-export type BurnupPoint = {
-  date: string;
-  actual: number | null;
-  ideal: number;
-  forecast: number | null;
-};
-
-const buildBurnup = (
+const buildEventSeries = (
   s: AppState,
-  todayISO: string,
+  nowMs: number,
   goal: number,
-  cumulativeAt: (date: string) => number,
-): BurnupPoint[] => {
-  const days = eachDay(s.startDate, s.targetDate);
-  const span = days.length - 1;
-  const todayActual = cumulativeAt(todayISO);
+  events: ValueEvent[],
+): BurnupSeries => {
   const startMs = new Date(s.startDate + 'T00:00:00Z').getTime();
-  const todayMs = new Date(todayISO + 'T00:00:00Z').getTime();
-  const elapsedDays = Math.max(0, Math.round((todayMs - startMs) / 86_400_000));
-  const pacePerDay = elapsedDays > 0 ? todayActual / elapsedDays : 0;
+  const targetMs = new Date(s.targetDate + 'T23:59:59Z').getTime();
 
-  return days.map((date, i) => {
-    const ideal = span === 0 ? goal : Math.round((goal * i) / span);
-    const isPastOrToday = date <= todayISO;
-    const isFutureOrToday = date >= todayISO;
-    const actual = isPastOrToday ? cumulativeAt(date) : null;
-    let forecast: number | null = null;
-    if (isFutureOrToday && elapsedDays > 0 && todayActual > 0) {
-      const dayMs = new Date(date + 'T00:00:00Z').getTime();
-      const daysFromToday = Math.round((dayMs - todayMs) / 86_400_000);
-      forecast = Math.min(goal, todayActual + pacePerDay * daysFromToday);
-    }
-    return { date, actual, ideal, forecast };
-  });
-};
+  // 「今」までに発生したイベントから現在の actual を決める
+  const eventsBeforeNow = events.filter(e => e.ts <= nowMs);
+  const currentActual = eventsBeforeNow.length > 0
+    ? eventsBeforeNow[eventsBeforeNow.length - 1].value
+    : 0;
 
-export const burnupSeries = (s: AppState, todayISO: string): BurnupPoint[] => {
-  const completedDates = Object.values(s.lessonProgress)
-    .map(p => p.completedAt.slice(0, 10))
-    .sort();
-  return buildBurnup(s, todayISO, TOTAL_LESSONS_GOAL, date => completedDates.filter(d => d <= date).length);
-};
+  const elapsedMs = Math.max(0, nowMs - startMs);
+  const pacePerMs = elapsedMs > 0 && currentActual > 0 ? currentActual / elapsedMs : 0;
+  const projectedAtTarget = pacePerMs > 0
+    ? Math.min(goal, currentActual + pacePerMs * Math.max(0, targetMs - nowMs))
+    : null;
 
-export const masteryBurnupSeries = (s: AppState, todayISO: string): BurnupPoint[] => {
-  const lessonDates = Object.values(s.lessonProgress).map(p => p.completedAt.slice(0, 10)).sort();
-  const attemptsByProblem = new Map<string, ProblemAttempt[]>();
-  for (const a of s.problemAttempts) {
-    const list = attemptsByProblem.get(a.problemId) ?? [];
-    list.push(a);
-    attemptsByProblem.set(a.problemId, list);
-  }
-  for (const list of attemptsByProblem.values()) {
-    list.sort((x, y) => x.attemptedAt.localeCompare(y.attemptedAt));
-  }
-
-  const cumulativeAt = (date: string): number => {
-    const lessonsDone = lessonDates.filter(d => d <= date).length;
-    let problemsCorrect = 0;
-    for (const list of attemptsByProblem.values()) {
-      let latest: ProblemAttempt | null = null;
-      for (const a of list) {
-        if (a.attemptedAt.slice(0, 10) <= date) latest = a;
-        else break;
-      }
-      if (latest?.correct) problemsCorrect += 1;
-    }
-    return lessonsDone + problemsCorrect;
+  // 行を ts でマージ
+  const rows = new Map<number, BurnupPoint>();
+  const get = (ts: number): BurnupPoint => {
+    let r = rows.get(ts);
+    if (!r) { r = { ts, actual: null, ideal: null, forecast: null }; rows.set(ts, r); }
+    return r;
   };
 
-  return buildBurnup(s, todayISO, MASTERY_GOAL, cumulativeAt);
+  // 実績イベント
+  get(startMs).actual = 0;
+  for (const e of events) {
+    if (e.ts <= nowMs) get(e.ts).actual = e.value;
+  }
+  // 「今」の点を追加: 直近イベントが now より前なら、横ばい線で today まで延ばす
+  if (eventsBeforeNow.length === 0 || eventsBeforeNow[eventsBeforeNow.length - 1].ts < nowMs) {
+    get(nowMs).actual = currentActual;
+  }
+
+  // 理想線 (始点〜目標日)
+  get(startMs).ideal = 0;
+  get(targetMs).ideal = goal;
+
+  // 予測線 (今〜目標日)
+  if (projectedAtTarget !== null) {
+    get(nowMs).forecast = currentActual;
+    get(targetMs).forecast = projectedAtTarget;
+  }
+
+  const points = [...rows.values()].sort((a, b) => a.ts - b.ts);
+  return { points, domain: [startMs, targetMs], goal, projectedAtTarget };
 };
+
+const parseNow = (nowISO: string): number => {
+  // 'YYYY-MM-DD' or full ISO datetime をどちらも受け取る
+  const hasTime = nowISO.includes('T');
+  return new Date(hasTime ? nowISO : nowISO + 'T00:00:00').getTime();
+};
+
+export const burnupSeries = (s: AppState, nowISO: string): BurnupSeries =>
+  buildEventSeries(s, parseNow(nowISO), TOTAL_LESSONS_GOAL, lessonValueEvents(s));
+
+export const masteryBurnupSeries = (s: AppState, nowISO: string): BurnupSeries =>
+  buildEventSeries(s, parseNow(nowISO), MASTERY_GOAL, masteryValueEvents(s));
 
 export const masteryProgress = (s: AppState) => {
   const lessons = Object.keys(s.lessonProgress).length;
@@ -116,6 +156,8 @@ export const masteryProgress = (s: AppState) => {
   const done = lessons + correct;
   return { done, total: MASTERY_GOAL, rate: MASTERY_GOAL === 0 ? 0 : done / MASTERY_GOAL };
 };
+
+// --- 配点・採点系 ---
 
 export type SectionAccuracy = { attempted: number; total: number; correct: number; rate: number };
 
@@ -142,7 +184,6 @@ export const examSectionAccuracy = (s: AppState): Record<ExamSection, SectionAcc
   return result;
 };
 
-// 練習問題の正答率を本試験配点で重み付けした想定本番得点 (未着手セクションは 0 点扱い)
 export const projectedExamScore = (s: AppState): number => {
   const acc = examSectionAccuracy(s);
   let score = 0;
@@ -152,7 +193,6 @@ export const projectedExamScore = (s: AppState): number => {
   return score;
 };
 
-// 直近の模試 (受験済み) の最高得点。なければ null
 export const latestMockTotal = (s: AppState): number | null => {
   const taken = s.mockExams.filter(m => m.total !== null && m.takenAt !== null);
   if (taken.length === 0) return null;
@@ -166,7 +206,6 @@ export const bestMockTotal = (s: AppState): number | null => {
   return Math.max(...taken.map(m => m.total!));
 };
 
-// 準備度: 模試があれば最新模試、なければ練習問題ベースの予想
 export const readinessScore = (s: AppState): { score: number; source: 'mock' | 'practice' | 'none' } => {
   const mock = latestMockTotal(s);
   if (mock !== null) return { score: mock, source: 'mock' };
@@ -175,7 +214,6 @@ export const readinessScore = (s: AppState): { score: number; source: 'mock' | '
   return { score: 0, source: 'none' };
 };
 
-// 残日数を踏まえた1日あたり必要ペース
 export const requiredDailyPace = (s: AppState, todayISO: string) => {
   const lessonsTotal = LESSONS.length;
   const problemsTotal = PROBLEMS.length;
@@ -185,7 +223,6 @@ export const requiredDailyPace = (s: AppState, todayISO: string) => {
   const problemsRemaining = Math.max(0, problemsTotal - problemsAttempted);
   const tMs = new Date(s.targetDate + 'T00:00:00Z').getTime();
   const todayMs = new Date(todayISO + 'T00:00:00Z').getTime();
-  // 「今日を含めて残り何日で消化するか」: 目標日まで含めるので +1
   const daysLeftInclusive = Math.max(0, Math.round((tMs - todayMs) / 86_400_000) + 1);
   const lessonsPerDay = daysLeftInclusive === 0 ? lessonsRemaining : lessonsRemaining / daysLeftInclusive;
   const problemsPerDay = daysLeftInclusive === 0 ? problemsRemaining : problemsRemaining / daysLeftInclusive;
@@ -198,7 +235,6 @@ export const requiredDailyPace = (s: AppState, todayISO: string) => {
   };
 };
 
-// 直近 N 日に間違えた問題の最新誤答 (再挑戦キュー用)
 export const recentWrongs = (s: AppState, todayISO: string, days: number = 7): ProblemAttempt[] => {
   const latest = latestAttemptByProblem(s);
   const cutoff = new Date(todayISO + 'T00:00:00Z');
