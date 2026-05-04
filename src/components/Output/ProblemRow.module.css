@@ -1,4 +1,5 @@
-.row { padding: 8px 12px; border-bottom: 1px solid #f0f0f3; }
+.row { padding: 6px 12px; border-bottom: 1px solid #f0f0f3; }
+.row:last-child { border-bottom: none; }
 .row:hover { background: #fafafc; }
 .main { display: flex; align-items: center; gap: 12px; }
 .no {
@@ -12,11 +13,11 @@
   border-radius: 4px;
   text-align: center;
 }
-.title { flex: 1; cursor: pointer; }
-.badge { width: 22px; text-align: center; font-weight: 600; }
+.badgeSlot { width: 22px; display: inline-flex; justify-content: center; }
+.badge { font-weight: 700; font-size: 14px; }
 .badgeOk { color: #1c8c1c; }
 .badgeNg { color: #c0392b; }
-.badgeNone { color: #ccc; }
+.title { flex: 1; cursor: pointer; }
 .actions { display: flex; gap: 6px; }
 .btn { padding: 4px 10px; border-radius: 6px; border: 1px solid #d0d0d5; background: #fff; }
 .btnOk { color: #1c8c1c; border-color: #1c8c1c; }

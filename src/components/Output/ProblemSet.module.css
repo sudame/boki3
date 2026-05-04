@@ -1,0 +1,20 @@
+.set {
+  border-bottom: 1px solid #f0f0f3;
+}
+.set:last-child { border-bottom: none; }
+.setHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f7f9fc;
+  cursor: pointer;
+  user-select: none;
+}
+.setHeader:hover { background: #eef2f7; }
+.caret { font-size: 10px; color: #888; width: 14px; }
+.setIcon { font-size: 14px; }
+.setTitle { flex: 1; font-weight: 600; font-size: 13px; color: #1d1d1f; }
+.setCount { font-size: 12px; color: #555; font-variant-numeric: tabular-nums; }
+.setLink { text-decoration: none; padding: 0 6px; font-size: 14px; }
+.setBody { padding: 4px 0 4px 24px; background: #fff; }

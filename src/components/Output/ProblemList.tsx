@@ -2,6 +2,7 @@ import { PROBLEMS, SOURCE_LABELS, SOURCE_ORDER, type Problem, type ProblemSource
 import { useAppState } from '../../state/StateContext';
 import { latestAttemptByProblem } from '../../state/selectors';
 import { ProblemRow } from './ProblemRow';
+import { ProblemSet } from './ProblemSet';
 import { ReviewQueue } from './ReviewQueue';
 import styles from './ProblemList.module.css';
 
@@ -12,6 +13,24 @@ const groupByCategory = (problems: Problem[]): Map<string, Problem[]> => {
     m.get(p.category)!.push(p);
   }
   return m;
+};
+
+type Bucket = { kind: 'set' | 'single'; url: string; problems: Problem[] };
+
+const bucketByUrl = (problems: Problem[]): Bucket[] => {
+  const groups = new Map<string, Problem[]>();
+  const order: string[] = [];
+  for (const p of problems) {
+    if (!groups.has(p.url)) {
+      groups.set(p.url, []);
+      order.push(p.url);
+    }
+    groups.get(p.url)!.push(p);
+  }
+  return order.map(url => {
+    const ps = groups.get(url)!;
+    return { kind: ps.length > 1 ? 'set' : 'single', url, problems: ps };
+  });
 };
 
 export const ProblemList = () => {
@@ -36,13 +55,38 @@ export const ProblemList = () => {
             {[...categories.entries()].map(([category, problems]) => {
               const attempted = problems.filter(p => latest[p.id]).length;
               const correct = problems.filter(p => latest[p.id]?.correct).length;
+              const buckets = bucketByUrl(problems);
+              // カテゴリ全体が1つの多問ページに収まる場合はリンクをヘッダに置く
+              const isSingleSet = buckets.length === 1 && buckets[0].kind === 'set';
+              const sharedUrl = isSingleSet ? buckets[0].url : null;
               return (
                 <div key={category} className={styles.section}>
                   <div className={styles.sectionHeader}>
-                    <span>{category}</span>
+                    <span className={styles.sectionTitle}>
+                      {category}
+                      {sharedUrl && (
+                        <a className={styles.headerLink} href={sharedUrl} target="_blank" rel="noreferrer" title="ページを開く">↗</a>
+                      )}
+                    </span>
                     <span>{correct}/{attempted} 正解 ({attempted}/{problems.length} 着手)</span>
                   </div>
-                  {problems.map(p => <ProblemRow key={p.id} problem={p} />)}
+                  {isSingleSet
+                    ? buckets[0].problems.map(p => (
+                        <ProblemRow key={p.id} problem={p} showNumber hideLink />
+                      ))
+                    : buckets.map(bucket =>
+                        bucket.kind === 'set' ? (
+                          <ProblemSet
+                            key={bucket.url}
+                            title={`${bucket.problems[0].title} (${bucket.problems.length}問)`}
+                            url={bucket.url}
+                            problems={bucket.problems}
+                            latest={latest}
+                          />
+                        ) : (
+                          <ProblemRow key={bucket.problems[0].id} problem={bucket.problems[0]} />
+                        ),
+                      )}
                 </div>
               );
             })}
