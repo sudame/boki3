@@ -1,4 +1,4 @@
-import type { AppState } from './types';
+import type { AppState, MockExam } from './types';
 
 export const STORAGE_KEY = 'boki3-state-v1';
 
@@ -10,12 +10,19 @@ const addDaysISO = (iso: string, days: number): string => {
   return d.toISOString().slice(0, 10);
 };
 
+export const createInitialMockExams = (): MockExam[] => [
+  { no: 1, takenAt: null, total: null, q1: null, q2: null, q3: null },
+  { no: 2, takenAt: null, total: null, q1: null, q2: null, q3: null },
+  { no: 3, takenAt: null, total: null, q1: null, q2: null, q3: null },
+];
+
 export const createInitialState = (): AppState => {
   const start = todayISO();
   return {
     version: 1,
     lessonProgress: {},
     problemAttempts: [],
+    mockExams: createInitialMockExams(),
     startDate: start,
     targetDate: addDaysISO(start, 6),
   };
@@ -27,7 +34,11 @@ export const loadState = (): AppState => {
     if (!raw) return createInitialState();
     const parsed = JSON.parse(raw);
     if (parsed?.version !== 1) return createInitialState();
-    return parsed as AppState;
+    return {
+      ...createInitialState(),
+      ...parsed,
+      mockExams: parsed.mockExams ?? createInitialMockExams(),
+    } as AppState;
   } catch {
     return createInitialState();
   }

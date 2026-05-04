@@ -1,0 +1,14 @@
+.list { display: flex; flex-direction: column; gap: 12px; }
+.slot { border: 1px solid #e5e5ea; border-radius: 6px; padding: 12px; }
+.slotHeader { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.slotTitle { font-weight: 600; flex: 1; }
+.badgePass { color: #1c8c1c; font-weight: 600; }
+.badgeFail { color: #c0392b; font-weight: 600; }
+.badgeNone { color: #999; font-size: 12px; }
+.fields { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 8px; align-items: end; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 11px; color: #666; }
+.input { padding: 6px 8px; border: 1px solid #d0d0d5; border-radius: 4px; font-size: 14px; width: 100%; }
+.actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 8px; }
+.btnSmall { padding: 4px 10px; border: 1px solid #d0d0d5; border-radius: 4px; background: #fff; font-size: 12px; }
+.summary { display: flex; gap: 16px; margin-top: 8px; padding-top: 12px; border-top: 1px dashed #e5e5ea; font-size: 13px; color: #555; }
+.summary strong { color: #1d1d1f; }

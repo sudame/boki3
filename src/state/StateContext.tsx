@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useReducer, type ReactNode } from 'react';
-import type { AppState, ProblemAttempt } from './types';
+import type { AppState, ProblemAttempt, MockExam } from './types';
 import { loadState, saveState } from './storage';
 
 type Action =
@@ -7,7 +7,9 @@ type Action =
   | { type: 'recordAttempt'; problemId: string; correct: boolean }
   | { type: 'setTargetDate'; date: string }
   | { type: 'setStartDate'; date: string }
-  | { type: 'setLessonCompletedAt'; lessonId: string; date: string };
+  | { type: 'setLessonCompletedAt'; lessonId: string; date: string }
+  | { type: 'updateMockExam'; no: 1 | 2 | 3; patch: Partial<Omit<MockExam, 'no'>> }
+  | { type: 'clearMockExam'; no: 1 | 2 | 3 };
 
 const reducer = (state: AppState, action: Action): AppState => {
   switch (action.type) {
@@ -43,6 +45,18 @@ const reducer = (state: AppState, action: Action): AppState => {
         },
       };
     }
+    case 'updateMockExam':
+      return {
+        ...state,
+        mockExams: state.mockExams.map(m => (m.no === action.no ? { ...m, ...action.patch } : m)),
+      };
+    case 'clearMockExam':
+      return {
+        ...state,
+        mockExams: state.mockExams.map(m =>
+          m.no === action.no ? { no: m.no, takenAt: null, total: null, q1: null, q2: null, q3: null } : m,
+        ),
+      };
   }
 };
 

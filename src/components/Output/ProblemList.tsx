@@ -2,6 +2,7 @@ import { PROBLEMS, SOURCE_LABELS, SOURCE_ORDER, type Problem, type ProblemSource
 import { useAppState } from '../../state/StateContext';
 import { latestAttemptByProblem } from '../../state/selectors';
 import { ProblemRow } from './ProblemRow';
+import { ReviewQueue } from './ReviewQueue';
 import styles from './ProblemList.module.css';
 
 const groupByCategory = (problems: Problem[]): Map<string, Problem[]> => {
@@ -18,6 +19,7 @@ export const ProblemList = () => {
   const latest = latestAttemptByProblem(state);
   return (
     <div>
+      <ReviewQueue />
       {SOURCE_ORDER.map((source: ProblemSource) => {
         const sourceProblems = PROBLEMS.filter(p => p.source === source);
         const categories = groupByCategory(sourceProblems);

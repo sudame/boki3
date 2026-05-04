@@ -16,6 +16,28 @@ export const SOURCE_LABELS: Record<ProblemSource, string> = {
 
 export const SOURCE_ORDER: ProblemSource[] = ['moneyfriends', 'inuboki'];
 
+export type ExamSection = 1 | 2 | 3;
+
+// 簿記3級本試験の配点
+export const EXAM_SECTION_MAX: Record<ExamSection, number> = { 1: 45, 2: 20, 3: 35 };
+
+// カテゴリ → 想定本試験セクション (粒度がカテゴリ単位なので近似)
+export const CATEGORY_TO_EXAM_SECTION: Record<string, ExamSection> = {
+  '第1問対策': 1,
+  '第2問対策': 2,
+  '現金預金': 1,
+  '商品売買①': 1,
+  '商品売買②': 2,
+  '有形固定資産': 1,
+  'その他の取引': 1,
+  '決算手続き': 3,
+  '伝票・証憑': 2,
+  '理論等': 2,
+};
+
+export const examSectionOf = (problem: Problem): ExamSection =>
+  CATEGORY_TO_EXAM_SECTION[problem.category] ?? 1;
+
 const MF_P1_URL = 'https://moneyfriends-blog.com/boki3-workbook-01/';
 
 export const PROBLEMS: Problem[] = [

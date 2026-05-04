@@ -1,0 +1,10 @@
+.queue { background: #fff5f5; border: 1px solid #f4c1bd; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+.title { margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #c0392b; }
+.empty { color: #888; font-size: 13px; }
+.list { display: flex; flex-direction: column; gap: 4px; }
+.item { display: flex; gap: 12px; align-items: center; font-size: 13px; padding: 4px 0; }
+.no { color: #888; font-variant-numeric: tabular-nums; min-width: 36px; }
+.cat { color: #666; font-size: 11px; }
+.linkTitle { flex: 1; color: #1d1d1f; text-decoration: none; }
+.linkTitle:hover { text-decoration: underline; }
+.date { color: #999; font-size: 11px; }

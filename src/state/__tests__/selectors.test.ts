@@ -14,6 +14,11 @@ const baseState = (overrides: Partial<AppState> = {}): AppState => ({
   version: 1,
   lessonProgress: {},
   problemAttempts: [],
+  mockExams: [
+    { no: 1, takenAt: null, total: null, q1: null, q2: null, q3: null },
+    { no: 2, takenAt: null, total: null, q1: null, q2: null, q3: null },
+    { no: 3, takenAt: null, total: null, q1: null, q2: null, q3: null },
+  ],
   startDate: '2026-05-04',
   targetDate: '2026-05-10',
   ...overrides,

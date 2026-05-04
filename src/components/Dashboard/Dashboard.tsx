@@ -1,5 +1,8 @@
 import { BurnupChart } from './BurnupChart';
 import { AccuracyTrend } from './AccuracyTrend';
+import { MockCard } from './MockCard';
+import { PaceCard } from './PaceCard';
+import { Heatmap } from './Heatmap';
 import { useAppState } from '../../state/StateContext';
 import { burnupSeries, masteryBurnupSeries, masteryProgress, inputProgress } from '../../state/selectors';
 import styles from './Dashboard.module.css';
@@ -11,8 +14,21 @@ export const Dashboard = () => {
   const masteryData = masteryBurnupSeries(state, today);
   const ip = inputProgress(state);
   const mp = masteryProgress(state);
+
   return (
     <div className={styles.grid}>
+      <div className={styles.card}>
+        <h2 className={styles.cardTitle}>必要ペース</h2>
+        <PaceCard />
+      </div>
+      <div className={styles.card}>
+        <h2 className={styles.cardTitle}>模試 (CPA 3回)</h2>
+        <MockCard />
+      </div>
+      <div className={styles.card}>
+        <h2 className={styles.cardTitle}>セクション別 習熟度ヒートマップ</h2>
+        <Heatmap />
+      </div>
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>総合バーンアップ (レッスン完了 + 問題正解 / {mp.total})</h2>
         <BurnupChart data={masteryData} goal={mp.total} />

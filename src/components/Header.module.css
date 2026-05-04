@@ -14,6 +14,8 @@
   border-radius: 999px;
   font-size: 13px;
 }
+.chipPass { background: #e6f4e6; color: #1c8c1c; font-weight: 600; }
+.chipFail { background: #fde9e7; color: #c0392b; font-weight: 600; }
 .settingsBtn {
   border: none;
   background: transparent;
