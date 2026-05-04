@@ -126,13 +126,13 @@ describe('burnupSeries', () => {
     expect(series[2].forecast).toBeNull();
     // today is anchor
     const today = series.find(p => p.date === '2026-05-04')!;
-    expect(today.forecast).toBe(4);
-    // +1 day → 4 + 4/3 ≈ 5.33 → 5
+    expect(today.forecast).toBeCloseTo(4);
+    // +1 day → 4 + 4/3 ≈ 5.33
     const tomorrow = series.find(p => p.date === '2026-05-05')!;
-    expect(tomorrow.forecast).toBe(5);
-    // +4 days → 4 + 16/3 ≈ 9.33 → 9
+    expect(tomorrow.forecast).toBeCloseTo(4 + 4 / 3);
+    // +4 days → 4 + 16/3 ≈ 9.33
     const target = series.find(p => p.date === '2026-05-08')!;
-    expect(target.forecast).toBe(9);
+    expect(target.forecast).toBeCloseTo(4 + 16 / 3);
   });
   it('forecast is null when nothing done yet (no pace)', () => {
     const s = baseState({ startDate: '2026-05-04', targetDate: '2026-05-10' });

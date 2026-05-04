@@ -68,7 +68,7 @@ const buildBurnup = (
     if (isFutureOrToday && elapsedDays > 0 && todayActual > 0) {
       const dayMs = new Date(date + 'T00:00:00Z').getTime();
       const daysFromToday = Math.round((dayMs - todayMs) / 86_400_000);
-      forecast = Math.min(goal, Math.round(todayActual + pacePerDay * daysFromToday));
+      forecast = Math.min(goal, todayActual + pacePerDay * daysFromToday);
     }
     return { date, actual, ideal, forecast };
   });
