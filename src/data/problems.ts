@@ -24,7 +24,15 @@ export const EXAM_SECTION_MAX: Record<ExamSection, number> = { 1: 45, 2: 20, 3: 
 // カテゴリ → 想定本試験セクション (粒度がカテゴリ単位なので近似)
 export const CATEGORY_TO_EXAM_SECTION: Record<string, ExamSection> = {
   '第1問対策': 1,
-  '第2問対策': 2,
+  '第2問対策 経過勘定': 2,
+  '第2問対策 法人税等': 2,
+  '第2問対策 純資産取引': 2,
+  '第2問対策 貯蔵品': 2,
+  '第2問対策 当座預金・貸倒引当金': 2,
+  '第2問対策 伝票記入': 2,
+  '第2問対策 固定資産台帳': 2,
+  '第2問対策 商品有高帳': 2,
+  '第2問対策 売掛金元帳・買掛金元帳': 2,
   'テーマ別 商品売買': 1,
   'テーマ別 現金・預金': 1,
   'テーマ別 手形・電子記録債権': 1,
@@ -64,16 +72,37 @@ export const PROBLEMS: Problem[] = [
   { id: 'p1-14', source: 'moneyfriends', category: '第1問対策', no: 14, title: '消費税の相殺と納税額確定', url: MF_P1_URL },
   { id: 'p1-15', source: 'moneyfriends', category: '第1問対策', no: 15, title: '納品書兼請求書に基づく仕入と消費税', url: MF_P1_URL },
 
-  // moneyfriends 第2問対策 (9問)
-  { id: 'p2-01', source: 'moneyfriends', category: '第2問対策', no: 1, title: '経過勘定', url: 'https://moneyfriends-blog.com/boki3-workbook-02/' },
-  { id: 'p2-02', source: 'moneyfriends', category: '第2問対策', no: 2, title: '法人税等', url: 'https://moneyfriends-blog.com/boki3-workbook-03/' },
-  { id: 'p2-03', source: 'moneyfriends', category: '第2問対策', no: 3, title: '純資産取引', url: 'https://moneyfriends-blog.com/boki3-workbook-04/' },
-  { id: 'p2-04', source: 'moneyfriends', category: '第2問対策', no: 4, title: '貯蔵品', url: 'https://moneyfriends-blog.com/boki3-workbook-05/' },
-  { id: 'p2-05', source: 'moneyfriends', category: '第2問対策', no: 5, title: '当座預金・貸倒引当金', url: 'https://moneyfriends-blog.com/boki3-workbook-06/' },
-  { id: 'p2-06', source: 'moneyfriends', category: '第2問対策', no: 6, title: '伝票記入', url: 'https://moneyfriends-blog.com/boki3-workbook-07/' },
-  { id: 'p2-07', source: 'moneyfriends', category: '第2問対策', no: 7, title: '固定資産台帳', url: 'https://moneyfriends-blog.com/boki3-workbook-08/' },
-  { id: 'p2-08', source: 'moneyfriends', category: '第2問対策', no: 8, title: '商品有高帳', url: 'https://moneyfriends-blog.com/boki3-workbook-09/' },
-  { id: 'p2-09', source: 'moneyfriends', category: '第2問対策', no: 9, title: '売掛金元帳・買掛金元帳', url: 'https://moneyfriends-blog.com/boki3-workbook-10/' },
+  // moneyfriends 第2問対策 (各ページに小問あり、合計21問)
+  // 経過勘定 (workbook-02, 4問)
+  { id: 'p2-01',   source: 'moneyfriends', category: '第2問対策 経過勘定',                no: 1, title: '支払利息の勘定記入（費用の未払い）',   url: 'https://moneyfriends-blog.com/boki3-workbook-02/' },
+  { id: 'p2-01-2', source: 'moneyfriends', category: '第2問対策 経過勘定',                no: 2, title: '受取利息の勘定記入（収益の未収）',     url: 'https://moneyfriends-blog.com/boki3-workbook-02/' },
+  { id: 'p2-01-3', source: 'moneyfriends', category: '第2問対策 経過勘定',                no: 3, title: '支払家賃の勘定記入（費用の前払い）',   url: 'https://moneyfriends-blog.com/boki3-workbook-02/' },
+  { id: 'p2-01-4', source: 'moneyfriends', category: '第2問対策 経過勘定',                no: 4, title: '受取家賃の勘定記入（収益の前受）',     url: 'https://moneyfriends-blog.com/boki3-workbook-02/' },
+  // 法人税等 (workbook-03, 2問)
+  { id: 'p2-02',   source: 'moneyfriends', category: '第2問対策 法人税等',                no: 1, title: '法人税等の勘定記入①',                  url: 'https://moneyfriends-blog.com/boki3-workbook-03/' },
+  { id: 'p2-02-2', source: 'moneyfriends', category: '第2問対策 法人税等',                no: 2, title: '法人税等の勘定記入②（納付書読み取り）', url: 'https://moneyfriends-blog.com/boki3-workbook-03/' },
+  // 純資産取引 (workbook-04, 2問)
+  { id: 'p2-03',   source: 'moneyfriends', category: '第2問対策 純資産取引',              no: 1, title: '繰越利益剰余金の勘定記入',             url: 'https://moneyfriends-blog.com/boki3-workbook-04/' },
+  { id: 'p2-03-2', source: 'moneyfriends', category: '第2問対策 純資産取引',              no: 2, title: '資本金・繰越利益剰余金の勘定記入',     url: 'https://moneyfriends-blog.com/boki3-workbook-04/' },
+  // 貯蔵品 (workbook-05, 2問)
+  { id: 'p2-04',   source: 'moneyfriends', category: '第2問対策 貯蔵品',                  no: 1, title: '貯蔵品の勘定記入①',                    url: 'https://moneyfriends-blog.com/boki3-workbook-05/' },
+  { id: 'p2-04-2', source: 'moneyfriends', category: '第2問対策 貯蔵品',                  no: 2, title: '貯蔵品の勘定記入②（再振替仕訳含む）', url: 'https://moneyfriends-blog.com/boki3-workbook-05/' },
+  // 当座預金・貸倒引当金 (workbook-06, 2問)
+  { id: 'p2-05',   source: 'moneyfriends', category: '第2問対策 当座預金・貸倒引当金',    no: 1, title: '当座預金の勘定記入',                   url: 'https://moneyfriends-blog.com/boki3-workbook-06/' },
+  { id: 'p2-05-2', source: 'moneyfriends', category: '第2問対策 当座預金・貸倒引当金',    no: 2, title: '貸倒引当金の勘定記入',                 url: 'https://moneyfriends-blog.com/boki3-workbook-06/' },
+  // 伝票記入 (workbook-07, 3問)
+  { id: 'p2-06',   source: 'moneyfriends', category: '第2問対策 伝票記入',                no: 1, title: '伝票記入①（売上取引）',               url: 'https://moneyfriends-blog.com/boki3-workbook-07/' },
+  { id: 'p2-06-2', source: 'moneyfriends', category: '第2問対策 伝票記入',                no: 2, title: '伝票記入②（仕入取引）',               url: 'https://moneyfriends-blog.com/boki3-workbook-07/' },
+  { id: 'p2-06-3', source: 'moneyfriends', category: '第2問対策 伝票記入',                no: 3, title: '仕訳日計表記入',                       url: 'https://moneyfriends-blog.com/boki3-workbook-07/' },
+  // 固定資産台帳 (workbook-08, 2問)
+  { id: 'p2-07',   source: 'moneyfriends', category: '第2問対策 固定資産台帳',            no: 1, title: '固定資産台帳からの勘定記入',           url: 'https://moneyfriends-blog.com/boki3-workbook-08/' },
+  { id: 'p2-07-2', source: 'moneyfriends', category: '第2問対策 固定資産台帳',            no: 2, title: '固定資産台帳の作成・売却損益',         url: 'https://moneyfriends-blog.com/boki3-workbook-08/' },
+  // 商品有高帳 (workbook-09, 2問)
+  { id: 'p2-08',   source: 'moneyfriends', category: '第2問対策 商品有高帳',              no: 1, title: '商品有高帳からの勘定記入',             url: 'https://moneyfriends-blog.com/boki3-workbook-09/' },
+  { id: 'p2-08-2', source: 'moneyfriends', category: '第2問対策 商品有高帳',              no: 2, title: '商品有高帳の作成（移動平均法）',       url: 'https://moneyfriends-blog.com/boki3-workbook-09/' },
+  // 売掛金元帳・買掛金元帳 (workbook-10, 2問)
+  { id: 'p2-09',   source: 'moneyfriends', category: '第2問対策 売掛金元帳・買掛金元帳',  no: 1, title: '売掛金元帳（得意先元帳）の作成',       url: 'https://moneyfriends-blog.com/boki3-workbook-10/' },
+  { id: 'p2-09-2', source: 'moneyfriends', category: '第2問対策 売掛金元帳・買掛金元帳',  no: 2, title: '買掛金元帳の作成',                     url: 'https://moneyfriends-blog.com/boki3-workbook-10/' },
 
   // moneyfriends テーマ別① 商品売買 (15問)
   { id: 'mft1-01', source: 'moneyfriends', category: 'テーマ別 商品売買', no: 1, title: '仕入諸掛りの処理', url: 'https://moneyfriends-blog.com/boki3-siwakemondai-01/' },
